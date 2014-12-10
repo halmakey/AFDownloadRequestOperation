@@ -205,7 +205,7 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(AFDownloadReque
                 }
                 
                 // loss of network connections = error set, but not cancel
-            }else if(!self.error) {
+            }else if(!self.error && ![[self tempPath] isEqual:_targetPath]) {
                 // move file to final position and capture error
                 NSFileManager *fileManager = [NSFileManager new];
                 if (self.shouldOverwrite) {
