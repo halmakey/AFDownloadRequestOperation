@@ -61,7 +61,7 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(AFDownloadReque
     }
 }
 
-- (id)initWithRequest:(NSURLRequest *)urlRequest targetPath:(NSString *)targetPath shouldResume:(BOOL)shouldResume {
+- (id)initWithRequest:(NSURLRequest *)urlRequest targetPath:(NSString *)targetPath tempPath:(NSString *)tempPath shouldResume:(BOOL)shouldResume {
     if ((self = [super initWithRequest:urlRequest])) {
         NSParameterAssert(targetPath != nil && urlRequest != nil);
         _shouldResume = shouldResume;
@@ -78,6 +78,8 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(AFDownloadReque
         }else {
             _targetPath = targetPath;
         }
+
+        _tempPath = tempPath;
 
         // Download is saved into a temorary file and renamed upon completion.
         NSString *tempPath = [self tempPath];
@@ -134,16 +136,6 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(AFDownloadReque
     }
     return success;
 }
-
-- (NSString *)tempPath {
-    NSString *tempPath = nil;
-    if (self.targetPath) {
-        NSString *md5URLString = [[self class] md5StringForString:self.targetPath];
-        tempPath = [[[self class] cacheFolder] stringByAppendingPathComponent:md5URLString];
-    }
-    return tempPath;
-}
-
 
 - (void)setProgressiveDownloadProgressBlock:(void (^)(AFDownloadRequestOperation *operation, NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpected, long long totalBytesReadForFile, long long totalBytesExpectedToReadForFile))block {
     self.progressiveDownloadProgress = block;
@@ -296,34 +288,4 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(AFDownloadReque
         });
     }
 }
-
-#pragma mark - Static
-
-+ (NSString *)cacheFolder {
-    NSFileManager *filemgr = [NSFileManager new];
-    static NSString *cacheFolder;
-
-    if (!cacheFolder) {
-        NSString *cacheDir = NSTemporaryDirectory();
-        cacheFolder = [cacheDir stringByAppendingPathComponent:kAFNetworkingIncompleteDownloadFolderName];
-    }
-
-    // ensure all cache directories are there
-    NSError *error = nil;
-    if(![filemgr createDirectoryAtPath:cacheFolder withIntermediateDirectories:YES attributes:nil error:&error]) {
-        NSLog(@"Failed to create cache directory at %@", cacheFolder);
-        cacheFolder = nil;
-    }
-    return cacheFolder;
-}
-
-// calculates the MD5 hash of a key
-+ (NSString *)md5StringForString:(NSString *)string {
-    const char *str = [string UTF8String];
-    unsigned char r[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(str, (uint32_t)strlen(str), r);
-    return [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-            r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]];
-}
-
 @end

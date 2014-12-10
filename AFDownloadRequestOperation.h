@@ -86,7 +86,7 @@
  @param shouldResume If YES, tries to resume a partial download if found.
  @return A new download request operation
  */
-- (id)initWithRequest:(NSURLRequest *)urlRequest targetPath:(NSString *)targetPath shouldResume:(BOOL)shouldResume;
+- (id)initWithRequest:(NSURLRequest *)urlRequest targetPath:(NSString *)targetPath tempPath:(NSString*)tempPath shouldResume:(BOOL)shouldResume;
 
 /** 
  Deletes the temporary file.
