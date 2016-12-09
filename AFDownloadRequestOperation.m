@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <AFDownloadRequestOperation.h>
-#import <AFURLConnectionOperation.h>
+#import "AFDownloadRequestOperation.h"
+#import <AFNetworking/AFURLConnectionOperation.h>
 #import <CommonCrypto/CommonDigest.h>
 #include <fcntl.h>
 #include <unistd.h>
